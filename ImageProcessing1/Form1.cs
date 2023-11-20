@@ -26,15 +26,27 @@ namespace ImageProcessing1
             op.ShowDialog();
 
             file_name = op.FileName;
-            loaded = (Bitmap)Image.FromFile(file_name);
+            try
+            {
+                loaded = (Bitmap)Image.FromFile(file_name);
+            }
+            catch (Exception ex){
+                MessageBox.Show("No image", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
 
             pictureBox1.Image = loaded;
         }
 
         //basic copy
-        private void button3_Click(object sender, EventArgs e)
+        private void button3_Click(object sender, EventArgs e) 
         {
+            if (loaded == null)
+            {
+                MessageBox.Show("No image loaded", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             processed = new Bitmap(loaded.Width, loaded.Height);
+          
             for (int i = 0; i < loaded.Width; i++)
             {
                 for(int j = 0; j < loaded.Height; j++)
@@ -49,6 +61,11 @@ namespace ImageProcessing1
         //greyscale
         private void button4_Click(object sender, EventArgs e)
         {
+            if (loaded == null)
+            {
+                MessageBox.Show("No image loaded", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             processed = new Bitmap(loaded.Width, loaded.Height);
             for (int i = 0; i < loaded.Width; i++)
             {
@@ -65,6 +82,11 @@ namespace ImageProcessing1
         //color inversion
         private void button5_Click(object sender, EventArgs e)
         {
+            if (loaded == null)
+            {
+                MessageBox.Show("No image loaded", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             processed = new Bitmap(loaded.Width, loaded.Height);
             for (int i = 0; i < loaded.Width; i++)
             {
@@ -80,6 +102,11 @@ namespace ImageProcessing1
         //histogram
         private void button6_Click(object sender, EventArgs e)
         {
+            if (loaded == null)
+            {
+                MessageBox.Show("No image loaded", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             processed = new Bitmap(loaded.Width, loaded.Height);
 
             for (int i = 0; i < loaded.Width; i++)
@@ -126,6 +153,11 @@ namespace ImageProcessing1
 
         private void button7_Click(object sender, EventArgs e)
         {
+            if (loaded == null)
+            {
+                MessageBox.Show("No image loaded", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
             processed = new Bitmap(loaded.Width, loaded.Height);
             for (int i = 0; i < loaded.Width; i++)
             {
@@ -145,9 +177,18 @@ namespace ImageProcessing1
 
         private void button2_Click(object sender, EventArgs e)
         {
-            SaveFileDialog saveFileDialog = new SaveFileDialog();
-            saveFileDialog.ShowDialog();
-            processed.Save(saveFileDialog.FileName);
+            if (processed != null)
+            {
+                SaveFileDialog saveFileDialog = new SaveFileDialog();
+                if (saveFileDialog.ShowDialog() == DialogResult.OK)
+                {
+                    processed.Save(saveFileDialog.FileName);
+                }
+            }
+            else
+                MessageBox.Show("No image", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
         }
+
+
     }
 }
