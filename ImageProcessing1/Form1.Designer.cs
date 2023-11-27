@@ -48,15 +48,16 @@
             this.offToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.camFiltersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.greysToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.inversionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.button1 = new System.Windows.Forms.Button();
             this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
             this.greyscale_timer = new System.Windows.Forms.Timer(this.components);
-            this.inversionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.inversion_timer = new System.Windows.Forms.Timer(this.components);
             this.subtraction_timer = new System.Windows.Forms.Timer(this.components);
+            this.saveFileDialog1 = new System.Windows.Forms.SaveFileDialog();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
@@ -92,7 +93,7 @@
             this.button9.TabIndex = 11;
             this.button9.Text = "Subtract";
             this.button9.UseVisualStyleBackColor = true;
-            this.button9.Click += new System.EventHandler(this.button9_Click);
+            this.button9.Click += new System.EventHandler(this.subtractButton_Click);
             // 
             // pictureBox3
             // 
@@ -113,7 +114,7 @@
             this.camFiltersToolStripMenuItem});
             this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
-            this.menuStrip1.Size = new System.Drawing.Size(915, 24);
+            this.menuStrip1.Size = new System.Drawing.Size(919, 24);
             this.menuStrip1.TabIndex = 15;
             this.menuStrip1.Text = "menuStrip1";
             // 
@@ -136,8 +137,9 @@
             // saveToolStripMenuItem
             // 
             this.saveToolStripMenuItem.Name = "saveToolStripMenuItem";
-            this.saveToolStripMenuItem.Size = new System.Drawing.Size(103, 22);
+            this.saveToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.saveToolStripMenuItem.Text = "Save";
+            this.saveToolStripMenuItem.Click += new System.EventHandler(this.saveToolStripMenuItem_Click);
             // 
             // basicImageProcessToolStripMenuItem
             // 
@@ -147,6 +149,7 @@
             this.invertionToolStripMenuItem,
             this.histogramToolStripMenuItem,
             this.sepiaToolStripMenuItem});
+            this.basicImageProcessToolStripMenuItem.Enabled = false;
             this.basicImageProcessToolStripMenuItem.Name = "basicImageProcessToolStripMenuItem";
             this.basicImageProcessToolStripMenuItem.Size = new System.Drawing.Size(125, 20);
             this.basicImageProcessToolStripMenuItem.Text = "Basic Image Process";
@@ -198,14 +201,14 @@
             // onToolStripMenuItem
             // 
             this.onToolStripMenuItem.Name = "onToolStripMenuItem";
-            this.onToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.onToolStripMenuItem.Size = new System.Drawing.Size(91, 22);
             this.onToolStripMenuItem.Text = "On";
             this.onToolStripMenuItem.Click += new System.EventHandler(this.onToolStripMenuItem_Click);
             // 
             // offToolStripMenuItem
             // 
             this.offToolStripMenuItem.Name = "offToolStripMenuItem";
-            this.offToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.offToolStripMenuItem.Size = new System.Drawing.Size(91, 22);
             this.offToolStripMenuItem.Text = "Off";
             this.offToolStripMenuItem.Click += new System.EventHandler(this.offToolStripMenuItem_Click);
             // 
@@ -222,9 +225,16 @@
             // greysToolStripMenuItem
             // 
             this.greysToolStripMenuItem.Name = "greysToolStripMenuItem";
-            this.greysToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.greysToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
             this.greysToolStripMenuItem.Text = "Greys";
             this.greysToolStripMenuItem.Click += new System.EventHandler(this.greysToolStripMenuItem_Click);
+            // 
+            // inversionToolStripMenuItem
+            // 
+            this.inversionToolStripMenuItem.Name = "inversionToolStripMenuItem";
+            this.inversionToolStripMenuItem.Size = new System.Drawing.Size(122, 22);
+            this.inversionToolStripMenuItem.Text = "Inversion";
+            this.inversionToolStripMenuItem.Click += new System.EventHandler(this.inversionToolStripMenuItem_Click);
             // 
             // contextMenuStrip1
             // 
@@ -261,13 +271,6 @@
             this.greyscale_timer.Interval = 5;
             this.greyscale_timer.Tick += new System.EventHandler(this.greyscale_timer_Tick);
             // 
-            // inversionToolStripMenuItem
-            // 
-            this.inversionToolStripMenuItem.Name = "inversionToolStripMenuItem";
-            this.inversionToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.inversionToolStripMenuItem.Text = "Inversion";
-            this.inversionToolStripMenuItem.Click += new System.EventHandler(this.inversionToolStripMenuItem_Click);
-            // 
             // inversion_timer
             // 
             this.inversion_timer.Interval = 10;
@@ -278,11 +281,15 @@
             this.subtraction_timer.Interval = 10;
             this.subtraction_timer.Tick += new System.EventHandler(this.subtraction_timer_Tick);
             // 
+            // saveFileDialog1
+            // 
+            this.saveFileDialog1.FileOk += new System.ComponentModel.CancelEventHandler(this.saveFileDialog1_FileOk);
+            // 
             // Form1
             // 
             this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.ClientSize = new System.Drawing.Size(915, 403);
+            this.ClientSize = new System.Drawing.Size(919, 413);
             this.Controls.Add(this.button1);
             this.Controls.Add(this.pictureBox3);
             this.Controls.Add(this.button9);
@@ -332,6 +339,7 @@
         private System.Windows.Forms.ToolStripMenuItem inversionToolStripMenuItem;
         private System.Windows.Forms.Timer inversion_timer;
         private System.Windows.Forms.Timer subtraction_timer;
+        private System.Windows.Forms.SaveFileDialog saveFileDialog1;
     }
 }
 

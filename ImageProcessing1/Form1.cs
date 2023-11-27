@@ -21,15 +21,18 @@ namespace ImageProcessing1
         public Form1()
         {
             InitializeComponent();
-            
         }
         Bitmap imageA;
         Bitmap imageB;
-        Bitmap processed;    
+        Bitmap processed;
 
         private void openToolStripMenuItem_Click(object sender, EventArgs e)
         {
             openFileDialog1.ShowDialog();
+        }
+        private void saveToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            saveFileDialog1.ShowDialog();
         }
 
         private void button1_Click(object sender, EventArgs e)
@@ -41,13 +44,36 @@ namespace ImageProcessing1
         {
             imageA = new Bitmap(openFileDialog1.FileName);
             pictureBox1.Image = imageA;
+            checkFile();
         }
         private void openFileDialog2_FileOk(object sender, CancelEventArgs e)
         {
             imageB = new Bitmap(openFileDialog2.FileName);
             pictureBox3.Image = imageB;
         }
-        
+
+        private void saveFileDialog1_FileOk(object sender, CancelEventArgs e)
+        {
+            string fileName = saveFileDialog1.FileName;
+            if(processed != null)
+            {
+                processed.Save(fileName);
+            }
+            
+        }
+
+        private void checkFile()
+        {
+            if(imageA == null)
+            {
+                basicImageProcessToolStripMenuItem.Enabled = false;
+            }
+            else
+            {
+                basicImageProcessToolStripMenuItem.Enabled = true;
+            }
+        }
+
 
         private void copyToolStripMenuItem_Click(object sender, EventArgs e)
         {
@@ -157,18 +183,24 @@ namespace ImageProcessing1
             pictureBox2.Image = processed;
         }
 
- 
+
         //subtraction activity
         //subtraction button
-        private void button9_Click(object sender, EventArgs e)
+        //if camera is on and has bg, dynamic call
+        //if camera off, basic subtraction
+        private void subtractButton_Click(object sender, EventArgs e)
         {
             if (imageB == null) return;
-            if (cameraOn)  //if camera enabled, use dynamic
+            if (cameraOn)
             {
                 subtraction_timer.Enabled = true;
                 subtraction_timer.Start();
+                greyscale_timer.Enabled = false;
+                greyscale_timer.Stop();
+                inversion_timer.Enabled = false;
+                inversion_timer.Stop();
             }
-            else
+            else if(!cameraOn)
             {
                 Color mygreen = Color.FromArgb(0, 0, 255);
                 int greygreen = (mygreen.R + mygreen.G + mygreen.B) / 3;
@@ -194,112 +226,10 @@ namespace ImageProcessing1
                 }
                 pictureBox2.Image = processed;
             }
-            
         }
 
-        Device[] devices = DeviceManager.GetAllDevices();
-        Device webcam = DeviceManager.GetDevice(0);
-        Boolean cameraOn = false;
 
-        private void onToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            webcam.ShowWindow(pictureBox1);
-            cameraOn = true;
-            check_modification();
-        
-            
-        }
-
-        private void offToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            webcam.Stop();
-            cameraOn = false;
-            check_modification();
-            inversion_timer.Stop();
-            greyscale_timer.Stop();
-
-        }
-
-        private void check_modification()
-        {
-            if (cameraOn)
-            {
-                camFiltersToolStripMenuItem.Enabled = true;
-            }
-            else
-            {
-                camFiltersToolStripMenuItem.Enabled = false ;
-            }
-        }
-
-        private void greysToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            greyscale_timer.Enabled = true;
-            greyscale_timer.Start();
-        }
-
-        private void greyscale_timer_Tick(object sender, EventArgs e)
-        {
-            IDataObject data;
-            Image bmap;
-            devices[0].Sendmessage();
-            data = Clipboard.GetDataObject();
-
-            if (data != null)
-            {
-                bmap = (Image)(data.GetData("System.Drawing.Bitmap", true));
-                if (bmap != null)
-                {
-                    Bitmap b = new Bitmap(bmap);
-                    ImageProcess2.BitmapFilter.GrayScale(b);
-                    pictureBox2.Image = b;
-                }
-                else
-                {
-                    Console.WriteLine("Clipboard data is not a valid image.");
-                }
-            }
-            else
-            {
-                Console.WriteLine("Clipboard data is not available.");
-            }
-        }
-
-        private void inversionToolStripMenuItem_Click(object sender, EventArgs e)
-        {
-            inversion_timer.Enabled = true; 
-            inversion_timer.Start();
-        }
-
-        private void inversion_timer_Tick(object sender, EventArgs e)
-        {
-            IDataObject data;
-            Image bmap;
-            devices[0].Sendmessage();
-            data = Clipboard.GetDataObject();
-
-            if (data != null)
-            {
-                bmap = (Image)(data.GetData("System.Drawing.Bitmap", true));
-                if (bmap != null)
-                {
-                    Bitmap b = new Bitmap(bmap);
-
-                    ImageProcess2.BitmapFilter.Invert(b);
-
-                    pictureBox2.Image = b;
-                }
-                else
-                {
-                    Console.WriteLine("Clipboard data is not a valid image.");
-                }
-            }
-            else
-            {
-                Console.WriteLine("Clipboard data is not available.");
-            }
-        }
-
+        //subtraction camera update tick
         private void subtraction_timer_Tick(object sender, EventArgs e)
         {
             IDataObject data;
@@ -311,21 +241,97 @@ namespace ImageProcessing1
             if (data != null)
             {
                 bmap = (Image)(data.GetData("System.Drawing.Bitmap", true));
-                if (bmap != null)
-                {
-                    Bitmap b = new Bitmap(bmap);
-                    ImageProcess2.BitmapFilter.Subtract(b, imageB, Color.Green, threshold);
-                    pictureBox2.Image = b;
-                }
-                else
-                {
-                    Console.WriteLine("Clipboard data is not a valid image.");
-                }
+                Bitmap b = new Bitmap(bmap);
+                ImageProcess2.BitmapFilter.Subtract(b, imageB, Color.Green, threshold);
+                pictureBox2.Image = b;
             }
             else
             {
-                Console.WriteLine("Clipboard data is not available.");
+                Console.WriteLine("for some reason di makuha sa clipboard");
             }
         }
+
+        Device[] devices = DeviceManager.GetAllDevices();
+        Device webcam = DeviceManager.GetDevice(0);
+        Boolean cameraOn = false;
+
+        private void onToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            webcam.ShowWindow(pictureBox1);
+            cameraOn = true;
+            check_modification();    
+        }
+
+        private void offToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            webcam.Stop();
+            cameraOn = false;
+            check_modification();
+            inversion_timer.Stop();
+            greyscale_timer.Stop();
+            subtraction_timer.Stop();
+        }
+
+        private void check_modification()
+        {
+            if (cameraOn)   camFiltersToolStripMenuItem.Enabled = true;
+            else            camFiltersToolStripMenuItem.Enabled = false ;
+        }
+
+        //cam filters below
+        
+        
+        private void greysToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            greyscale_timer.Enabled = true;
+            greyscale_timer.Start();
+
+
+            inversion_timer.Enabled = false;
+            inversion_timer.Stop();
+
+            subtraction_timer.Enabled = false;
+            subtraction_timer.Stop();
+        }
+
+        private void greyscale_timer_Tick(object sender, EventArgs e)
+        {
+            IDataObject data;
+            Image bmap;
+            devices[0].Sendmessage();
+            data = Clipboard.GetDataObject();
+            bmap = (Image)(data.GetData("System.Drawing.Bitmap", true));
+            Bitmap b = new Bitmap(bmap);
+            ImageProcess2.BitmapFilter.GrayScale(b);
+            pictureBox2.Image = b;
+        }
+
+
+
+        private void inversionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            inversion_timer.Enabled = true;
+            inversion_timer.Start();
+
+            greyscale_timer.Enabled = false;
+            greyscale_timer.Stop();
+
+            subtraction_timer.Enabled = false;
+            subtraction_timer.Stop();
+        }
+
+        private void inversion_timer_Tick(object sender, EventArgs e)
+        {
+            IDataObject data;
+            Image bmap;
+            devices[0].Sendmessage();
+            data = Clipboard.GetDataObject();
+            bmap = (Image)(data.GetData("System.Drawing.Bitmap", true));
+            Bitmap b = new Bitmap(bmap);
+            ImageProcess2.BitmapFilter.Invert(b);
+            pictureBox2.Image = b;
+
+        }
+
     }
 }
