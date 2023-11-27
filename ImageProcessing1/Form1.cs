@@ -11,6 +11,8 @@ using System.Xml.Linq;
 using WebCamLib;
 using ImageProcess2;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrayNotify;
+using System.Runtime.CompilerServices;
+using HNUDIP;
 
 namespace ImageProcessing1
 {
@@ -156,55 +158,81 @@ namespace ImageProcessing1
         }
 
  
-
-        //subtraction
+        //subtraction activity
+        //subtraction button
         private void button9_Click(object sender, EventArgs e)
         {
-            Color mygreen = Color.FromArgb(0, 0, 255);
-            int greygreen = (mygreen.R + mygreen.G + mygreen.B) / 3;
-            processed = new Bitmap(imageA.Width, imageA.Height);
-            int threshold = 5;
-            for (int x = 0; x < imageA.Width; x++)
+            if (imageB == null) return;
+            if (cameraOn)  //if camera enabled, use dynamic
             {
-                for (int y = 0; y < imageA.Height; y++)
+                subtraction_timer.Enabled = true;
+                subtraction_timer.Start();
+            }
+            else
+            {
+                Color mygreen = Color.FromArgb(0, 0, 255);
+                int greygreen = (mygreen.R + mygreen.G + mygreen.B) / 3;
+                processed = new Bitmap(imageA.Width, imageA.Height);
+                int threshold = 1;
+                for (int x = 0; x < imageA.Width; x++)
                 {
-                    Color pixel = imageA.GetPixel(x, y);
-                    Color backpixel = imageB.GetPixel(x, y);
-                    int grey = (pixel.R + pixel.G + pixel.B) / 3;
-                    int sval = Math.Abs(grey - greygreen);
-                    if (sval > threshold)
+                    for (int y = 0; y < imageA.Height; y++)
                     {
-                        processed.SetPixel(x, y, pixel);
-                    }
-                    else
-                    {
-                        processed.SetPixel(x, y, backpixel);
+                        Color pixel = imageA.GetPixel(x, y);
+                        Color backpixel = imageB.GetPixel(x, y);
+                        int grey = (pixel.R + pixel.G + pixel.B) / 3;
+                        int sval = Math.Abs(grey - greygreen);
+                        if (sval > threshold)
+                        {
+                            processed.SetPixel(x, y, pixel);
+                        }
+                        else
+                        {
+                            processed.SetPixel(x, y, backpixel);
+                        }
                     }
                 }
+                pictureBox2.Image = processed;
             }
-            pictureBox2.Image = processed;
+            
         }
 
         Device[] devices = DeviceManager.GetAllDevices();
         Device webcam = DeviceManager.GetDevice(0);
+        Boolean cameraOn = false;
 
         private void onToolStripMenuItem_Click(object sender, EventArgs e)
         {
             webcam.ShowWindow(pictureBox1);
-            for(int i = 0; i < devices.Length; i++)
-            {
-                Console.WriteLine(devices[i].ToString());
-                Console.WriteLine("\n");
-            }
+            cameraOn = true;
+            check_modification();
+        
             
         }
 
         private void offToolStripMenuItem_Click(object sender, EventArgs e)
         {
             webcam.Stop();
+            cameraOn = false;
+            check_modification();
+            inversion_timer.Stop();
+            greyscale_timer.Stop();
+
         }
 
-        private void grayscaleToolStripMenuItem_Click(object sender, EventArgs e)
+        private void check_modification()
+        {
+            if (cameraOn)
+            {
+                camFiltersToolStripMenuItem.Enabled = true;
+            }
+            else
+            {
+                camFiltersToolStripMenuItem.Enabled = false ;
+            }
+        }
+
+        private void greysToolStripMenuItem_Click(object sender, EventArgs e)
         {
             greyscale_timer.Enabled = true;
             greyscale_timer.Start();
@@ -223,10 +251,71 @@ namespace ImageProcessing1
                 if (bmap != null)
                 {
                     Bitmap b = new Bitmap(bmap);
-
                     ImageProcess2.BitmapFilter.GrayScale(b);
+                    pictureBox2.Image = b;
+                }
+                else
+                {
+                    Console.WriteLine("Clipboard data is not a valid image.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Clipboard data is not available.");
+            }
+        }
 
-                    pictureBox3.Image = b;
+        private void inversionToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            inversion_timer.Enabled = true; 
+            inversion_timer.Start();
+        }
+
+        private void inversion_timer_Tick(object sender, EventArgs e)
+        {
+            IDataObject data;
+            Image bmap;
+            devices[0].Sendmessage();
+            data = Clipboard.GetDataObject();
+
+            if (data != null)
+            {
+                bmap = (Image)(data.GetData("System.Drawing.Bitmap", true));
+                if (bmap != null)
+                {
+                    Bitmap b = new Bitmap(bmap);
+
+                    ImageProcess2.BitmapFilter.Invert(b);
+
+                    pictureBox2.Image = b;
+                }
+                else
+                {
+                    Console.WriteLine("Clipboard data is not a valid image.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Clipboard data is not available.");
+            }
+        }
+
+        private void subtraction_timer_Tick(object sender, EventArgs e)
+        {
+            IDataObject data;
+            Image bmap;
+            devices[0].Sendmessage();
+            data = Clipboard.GetDataObject();
+
+            int threshold = 95;
+            if (data != null)
+            {
+                bmap = (Image)(data.GetData("System.Drawing.Bitmap", true));
+                if (bmap != null)
+                {
+                    Bitmap b = new Bitmap(bmap);
+                    ImageProcess2.BitmapFilter.Subtract(b, imageB, Color.Green, threshold);
+                    pictureBox2.Image = b;
                 }
                 else
                 {

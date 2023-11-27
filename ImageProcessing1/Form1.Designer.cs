@@ -46,15 +46,17 @@
             this.cameraToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.onToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.offToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.camFiltersToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.greysToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.contextMenuStrip1 = new System.Windows.Forms.ContextMenuStrip(this.components);
             this.contextMenuStrip2 = new System.Windows.Forms.ContextMenuStrip(this.components);
-            this.menuStrip2 = new System.Windows.Forms.MenuStrip();
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.button1 = new System.Windows.Forms.Button();
             this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
-            this.grayscaleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
-            this.invertToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
             this.greyscale_timer = new System.Windows.Forms.Timer(this.components);
+            this.inversionToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.inversion_timer = new System.Windows.Forms.Timer(this.components);
+            this.subtraction_timer = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
@@ -107,8 +109,9 @@
             this.menuStrip1.Items.AddRange(new System.Windows.Forms.ToolStripItem[] {
             this.fileToolStripMenuItem,
             this.basicImageProcessToolStripMenuItem,
-            this.cameraToolStripMenuItem});
-            this.menuStrip1.Location = new System.Drawing.Point(0, 24);
+            this.cameraToolStripMenuItem,
+            this.camFiltersToolStripMenuItem});
+            this.menuStrip1.Location = new System.Drawing.Point(0, 0);
             this.menuStrip1.Name = "menuStrip1";
             this.menuStrip1.Size = new System.Drawing.Size(915, 24);
             this.menuStrip1.TabIndex = 15;
@@ -194,9 +197,6 @@
             // 
             // onToolStripMenuItem
             // 
-            this.onToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
-            this.grayscaleToolStripMenuItem,
-            this.invertToolStripMenuItem});
             this.onToolStripMenuItem.Name = "onToolStripMenuItem";
             this.onToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.onToolStripMenuItem.Text = "On";
@@ -209,6 +209,23 @@
             this.offToolStripMenuItem.Text = "Off";
             this.offToolStripMenuItem.Click += new System.EventHandler(this.offToolStripMenuItem_Click);
             // 
+            // camFiltersToolStripMenuItem
+            // 
+            this.camFiltersToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.greysToolStripMenuItem,
+            this.inversionToolStripMenuItem});
+            this.camFiltersToolStripMenuItem.Enabled = false;
+            this.camFiltersToolStripMenuItem.Name = "camFiltersToolStripMenuItem";
+            this.camFiltersToolStripMenuItem.Size = new System.Drawing.Size(78, 20);
+            this.camFiltersToolStripMenuItem.Text = "Cam Filters";
+            // 
+            // greysToolStripMenuItem
+            // 
+            this.greysToolStripMenuItem.Name = "greysToolStripMenuItem";
+            this.greysToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.greysToolStripMenuItem.Text = "Greys";
+            this.greysToolStripMenuItem.Click += new System.EventHandler(this.greysToolStripMenuItem_Click);
+            // 
             // contextMenuStrip1
             // 
             this.contextMenuStrip1.Name = "contextMenuStrip1";
@@ -218,14 +235,6 @@
             // 
             this.contextMenuStrip2.Name = "contextMenuStrip2";
             this.contextMenuStrip2.Size = new System.Drawing.Size(61, 4);
-            // 
-            // menuStrip2
-            // 
-            this.menuStrip2.Location = new System.Drawing.Point(0, 0);
-            this.menuStrip2.Name = "menuStrip2";
-            this.menuStrip2.Size = new System.Drawing.Size(915, 24);
-            this.menuStrip2.TabIndex = 18;
-            this.menuStrip2.Text = "menuStrip2";
             // 
             // openFileDialog1
             // 
@@ -247,22 +256,27 @@
             this.openFileDialog2.FileName = "openFileDialog2";
             this.openFileDialog2.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog2_FileOk);
             // 
-            // grayscaleToolStripMenuItem
-            // 
-            this.grayscaleToolStripMenuItem.Name = "grayscaleToolStripMenuItem";
-            this.grayscaleToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.grayscaleToolStripMenuItem.Text = "Grayscale";
-            this.grayscaleToolStripMenuItem.Click += new System.EventHandler(this.grayscaleToolStripMenuItem_Click);
-            // 
-            // invertToolStripMenuItem
-            // 
-            this.invertToolStripMenuItem.Name = "invertToolStripMenuItem";
-            this.invertToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
-            this.invertToolStripMenuItem.Text = "Invert";
-            // 
             // greyscale_timer
             // 
+            this.greyscale_timer.Interval = 5;
             this.greyscale_timer.Tick += new System.EventHandler(this.greyscale_timer_Tick);
+            // 
+            // inversionToolStripMenuItem
+            // 
+            this.inversionToolStripMenuItem.Name = "inversionToolStripMenuItem";
+            this.inversionToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.inversionToolStripMenuItem.Text = "Inversion";
+            this.inversionToolStripMenuItem.Click += new System.EventHandler(this.inversionToolStripMenuItem_Click);
+            // 
+            // inversion_timer
+            // 
+            this.inversion_timer.Interval = 10;
+            this.inversion_timer.Tick += new System.EventHandler(this.inversion_timer_Tick);
+            // 
+            // subtraction_timer
+            // 
+            this.subtraction_timer.Interval = 10;
+            this.subtraction_timer.Tick += new System.EventHandler(this.subtraction_timer_Tick);
             // 
             // Form1
             // 
@@ -275,7 +289,6 @@
             this.Controls.Add(this.pictureBox2);
             this.Controls.Add(this.pictureBox1);
             this.Controls.Add(this.menuStrip1);
-            this.Controls.Add(this.menuStrip2);
             this.MainMenuStrip = this.menuStrip1;
             this.Name = "Form1";
             this.Text = "Form1";
@@ -310,13 +323,15 @@
         private System.Windows.Forms.ToolStripMenuItem offToolStripMenuItem;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip1;
         private System.Windows.Forms.ContextMenuStrip contextMenuStrip2;
-        private System.Windows.Forms.MenuStrip menuStrip2;
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.OpenFileDialog openFileDialog2;
-        private System.Windows.Forms.ToolStripMenuItem grayscaleToolStripMenuItem;
-        private System.Windows.Forms.ToolStripMenuItem invertToolStripMenuItem;
         private System.Windows.Forms.Timer greyscale_timer;
+        private System.Windows.Forms.ToolStripMenuItem camFiltersToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem greysToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem inversionToolStripMenuItem;
+        private System.Windows.Forms.Timer inversion_timer;
+        private System.Windows.Forms.Timer subtraction_timer;
     }
 }
 
