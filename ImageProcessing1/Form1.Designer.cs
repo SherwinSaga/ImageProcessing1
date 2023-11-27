@@ -52,6 +52,9 @@
             this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
             this.button1 = new System.Windows.Forms.Button();
             this.openFileDialog2 = new System.Windows.Forms.OpenFileDialog();
+            this.grayscaleToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.invertToolStripMenuItem = new System.Windows.Forms.ToolStripMenuItem();
+            this.greyscale_timer = new System.Windows.Forms.Timer(this.components);
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox2)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.pictureBox3)).BeginInit();
@@ -191,6 +194,9 @@
             // 
             // onToolStripMenuItem
             // 
+            this.onToolStripMenuItem.DropDownItems.AddRange(new System.Windows.Forms.ToolStripItem[] {
+            this.grayscaleToolStripMenuItem,
+            this.invertToolStripMenuItem});
             this.onToolStripMenuItem.Name = "onToolStripMenuItem";
             this.onToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.onToolStripMenuItem.Text = "On";
@@ -201,6 +207,7 @@
             this.offToolStripMenuItem.Name = "offToolStripMenuItem";
             this.offToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
             this.offToolStripMenuItem.Text = "Off";
+            this.offToolStripMenuItem.Click += new System.EventHandler(this.offToolStripMenuItem_Click);
             // 
             // contextMenuStrip1
             // 
@@ -239,6 +246,23 @@
             // 
             this.openFileDialog2.FileName = "openFileDialog2";
             this.openFileDialog2.FileOk += new System.ComponentModel.CancelEventHandler(this.openFileDialog2_FileOk);
+            // 
+            // grayscaleToolStripMenuItem
+            // 
+            this.grayscaleToolStripMenuItem.Name = "grayscaleToolStripMenuItem";
+            this.grayscaleToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.grayscaleToolStripMenuItem.Text = "Grayscale";
+            this.grayscaleToolStripMenuItem.Click += new System.EventHandler(this.grayscaleToolStripMenuItem_Click);
+            // 
+            // invertToolStripMenuItem
+            // 
+            this.invertToolStripMenuItem.Name = "invertToolStripMenuItem";
+            this.invertToolStripMenuItem.Size = new System.Drawing.Size(180, 22);
+            this.invertToolStripMenuItem.Text = "Invert";
+            // 
+            // greyscale_timer
+            // 
+            this.greyscale_timer.Tick += new System.EventHandler(this.greyscale_timer_Tick);
             // 
             // Form1
             // 
@@ -290,6 +314,9 @@
         private System.Windows.Forms.OpenFileDialog openFileDialog1;
         private System.Windows.Forms.Button button1;
         private System.Windows.Forms.OpenFileDialog openFileDialog2;
+        private System.Windows.Forms.ToolStripMenuItem grayscaleToolStripMenuItem;
+        private System.Windows.Forms.ToolStripMenuItem invertToolStripMenuItem;
+        private System.Windows.Forms.Timer greyscale_timer;
     }
 }
 

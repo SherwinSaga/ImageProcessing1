@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Xml.Linq;
 using WebCamLib;
+using ImageProcess2;
 using static System.Windows.Forms.VisualStyles.VisualStyleElement.TrayNotify;
 
 namespace ImageProcessing1
@@ -190,9 +191,52 @@ namespace ImageProcessing1
         private void onToolStripMenuItem_Click(object sender, EventArgs e)
         {
             webcam.ShowWindow(pictureBox1);
-            Console.WriteLine(webcam.ToString());
+            for(int i = 0; i < devices.Length; i++)
+            {
+                Console.WriteLine(devices[i].ToString());
+                Console.WriteLine("\n");
+            }
+            
         }
 
-        
+        private void offToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            webcam.Stop();
+        }
+
+        private void grayscaleToolStripMenuItem_Click(object sender, EventArgs e)
+        {
+            greyscale_timer.Enabled = true;
+            greyscale_timer.Start();
+        }
+
+        private void greyscale_timer_Tick(object sender, EventArgs e)
+        {
+            IDataObject data;
+            Image bmap;
+            devices[0].Sendmessage();
+            data = Clipboard.GetDataObject();
+
+            if (data != null)
+            {
+                bmap = (Image)(data.GetData("System.Drawing.Bitmap", true));
+                if (bmap != null)
+                {
+                    Bitmap b = new Bitmap(bmap);
+
+                    ImageProcess2.BitmapFilter.GrayScale(b);
+
+                    pictureBox3.Image = b;
+                }
+                else
+                {
+                    Console.WriteLine("Clipboard data is not a valid image.");
+                }
+            }
+            else
+            {
+                Console.WriteLine("Clipboard data is not available.");
+            }
+        }
     }
 }
